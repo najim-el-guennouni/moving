@@ -10,7 +10,8 @@
 		<section class="jumbotron text-center">
 			<div class="container">
 
-				<h1 class="jumbotron-heading">Category - Funny</h1>
+				<h1 class="jumbotron-heading">Category -
+					{{subcategories.currentCategoryName}}</h1>
 				<div class="btn-group">
 					<div class="dropdown ml-2">
 						<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -18,7 +19,10 @@
 						</button>
 						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 							<ul class="mr-5">
-								//  to do
+								<li>
+									<a href="{{path('video_list',{'categoryname':subcategories.mainParentName|slugify|lower, 'id':subcategories.mainParentId})}}">{{subcategories.mainParentName}}</a>
+								</li>
+								{{subcategories.categorylist|raw}}
 							</ul>
 						</div>
 					</div>
@@ -63,14 +67,14 @@
 												<i class="fa fa-thumbs-up"></i>
 											</button>
 											<!-- <button data-toggle="tooltip" data-placement="top" title="You like the video. Click to unlike" type="button" class="btn btn-primary btn-outline-success btn-sm mr-2">
-																																																																																																																																																																											                                    <i class="fa fa-thumbs-up"></i>
-																																																																																																																																																																											                                    </button> -->
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																									                                    <i class="fa fa-thumbs-up"></i>
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																									                                    </button> -->
 											<button data-toggle="tooltip" data-placement="top" title="Click to dislike the video" type="button" class="btn btn-primary btn-outline-danger btn-sm ml-1 mr-1">
 												<i class="fa fa-thumbs-down"></i>
 											</button>
 											<!-- <button data-toggle="tooltip" data-placement="top" title="You don't like the video. Click to undo" type="button" class="btn btn-primary btn-outline-danger btn-sm mr-2">
-																																																																																																																																																																											                                    <i class="fa fa-thumbs-down"></i>
-																																																																																																																																																																											                                    </button> -->
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																									                                    <i class="fa fa-thumbs-down"></i>
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																									                                    </button> -->
 											<a href="{{path('video_details')}}#video_comments">Comments (32)</a>
 										</div>
 										<small class="text-muted">9 mins</small>
@@ -91,7 +95,7 @@
 									<b>MEMBERS</b>
 									only.
 									<a href="pricing.php">Sign
-																																																																																																																																																																						                                    up</a>
+																																																																																																																																																																																																																																																																																																																																																																																																																																										                                    up</a>
 									for one month for free.</p>
 								<div class="d-flex justify-content-between align-items-center">
 									<div class="btn-group">
