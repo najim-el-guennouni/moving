@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Form\CategoryType;
 use App\Utils\CategoryTreeAdminList;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Utils\CategoryTreeAdminOptionList;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/admin")
@@ -23,14 +25,26 @@ class AdminController extends AbstractController
         return $this->render('admin/my_profile.html.twig');
     }
     /**
-     * @Route("/categories", name="categories")
+     * @Route("/categories", name="categories", methods={"GET","POST"})
      */
-    public function categories(CategoryTreeAdminList $categories)
+    public function categories(CategoryTreeAdminList $categories, Request $request, ManagerRegistry $doctrine)
     {
         $categories->getCategoryList($categories->buildTree());
-        // dump($categories);
+
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $is_invalid = null;
+
+        if ($this->saveCategory($category, $form, $request)) {
+            return $this->redirectToRoute('categories');
+        } elseif ($request->isMethod('post')) {
+            $is_invalid = ' is-invalid';
+        }
+
         return $this->render('admin/categories.html.twig', [
-            'categories' => $categories->categorylist
+            'categories' => $categories->categorylist,
+            'form' => $form->createView(),
+            'is_invalid' => $is_invalid
         ]);
     }
     /**
@@ -81,5 +95,25 @@ class AdminController extends AbstractController
             'categories' => $categories,
             'editCategory' => $editCategory
         ]);
+    }
+    private function saveCategory($category, $form, $request, ManagerRegistry $doctrine)
+    {
+        $entityManager = $doctrine->getManager();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $category->setName($request->request->get('category')['name']);
+
+            $repository =  $doctrine->getRepository(Category::class);
+            $parent = $repository->find($request->request->get('category')['parent']);
+            $category->setParent($parent);
+
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            return true;
+        }
+        return false;
     }
 }
