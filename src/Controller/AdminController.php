@@ -24,29 +24,7 @@ class AdminController extends AbstractController
     {
         return $this->render('admin/my_profile.html.twig');
     }
-    /**
-     * @Route("/categories", name="categories", methods={"GET","POST"})
-     */
-    public function categories(CategoryTreeAdminList $categories, Request $request, ManagerRegistry $doctrine)
-    {
-        $categories->getCategoryList($categories->buildTree());
 
-        $category = new Category();
-        $form = $this->createForm(CategoryType::class, $category);
-        $is_invalid = null;
-
-        if ($this->saveCategory($category, $form, $request)) {
-            return $this->redirectToRoute('categories');
-        } elseif ($request->isMethod('post')) {
-            $is_invalid = ' is-invalid';
-        }
-
-        return $this->render('admin/categories.html.twig', [
-            'categories' => $categories->categorylist,
-            'form' => $form->createView(),
-            'is_invalid' => $is_invalid
-        ]);
-    }
     /**
      * @Route("/videos", name="videos")
      */
@@ -69,13 +47,48 @@ class AdminController extends AbstractController
         return $this->render('admin/users.html.twig');
     }
     /**
-     * @Route("/edit_category/{id}", name="edit_category")
+     * @Route("/categories", name="categories", methods={"GET","POST"})
      */
-    public function editcategory(Category $category): Response
+    public function categories(CategoryTreeAdminList $categories, Request $request, ManagerRegistry $doctrine)
     {
-        return $this->render('admin/edit_category.html.twig', [
-            'category' => $category
+        $entityManager = $doctrine->getManager();
 
+        $categories->getCategoryList($categories->buildTree());
+
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $is_invalid = null;
+
+        if ($this->saveCategory($category, $form, $request, $doctrine)) {
+            return $this->redirectToRoute('categories');
+        } elseif ($request->isMethod('post')) {
+            $is_invalid = ' is-invalid';
+        }
+
+        return $this->render('admin/categories.html.twig', [
+            'categories' => $categories->categorylist,
+            'form' => $form->createView(),
+            'is_invalid' => $is_invalid
+        ]);
+    }
+    /**
+     * @Route("/edit-category/{id}", name="edit_category", methods={"GET","POST"})
+     */
+    public function editCategory(Category $category, Request $request, ManagerRegistry $doctrine)
+    {
+        $form = $this->createForm(CategoryType::class, $category);
+        $is_invalid = null;
+
+        if ($this->saveCategory($category, $form, $request, $doctrine)) {
+            return $this->redirectToRoute('categories');
+        } elseif ($request->isMethod('post')) {
+            $is_invalid = ' is-invalid';
+        }
+
+        return $this->render('admin/edit_category.html.twig', [
+            'category' => $category,
+            'form' => $form->createView(),
+            'is_invalid' => $is_invalid
         ]);
     }
     /**
