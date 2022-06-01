@@ -25,7 +25,6 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
         $key = array_search($id, array_column($this->categoriesArrayFromDb, 'id'));
         $this->currentCategoryName = $this->categoriesArrayFromDb[$key]['name']; // for accesing in view
         $categories_array = $this->buildTree($parentData['id']); // builds array for generating nested html list
-
         return $this->getCategoryList($categories_array);
     }
 
@@ -34,6 +33,7 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
         $this->categorylist .= $this->html_1;
         foreach ($categories_array as $value) {
             $catName = $this->slugger->slugify($value['name']);
+
             $url = $this->urlgenerator->generate('video_list', ['categoryname' => $catName, 'id' => $value['id']]);
             $this->categorylist .= $this->html_2 . $this->html_3 . $url . $this->html_4 . $value['name'] . $this->html_5;
             if (!empty($value['children'])) {
@@ -57,6 +57,8 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
             ];
         }
     }
+
+
     public function getChildIds(int $parent): array
     {
         static $ids = [];
