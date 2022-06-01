@@ -37,6 +37,8 @@ class Video
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="videos")
+     *@ORM\JoinColumn(name="category_id", referencedColumnName="id",
+     * onDelete="CASCADE")
      */
     private $category;
 
