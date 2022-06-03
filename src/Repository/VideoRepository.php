@@ -23,16 +23,16 @@ class VideoRepository extends ServiceEntityRepository
         $this->paginator = $paginator;
     }
 
-    public function findByChildIds(array $value, int $page)
-    {
-        $dbquery = $this->createQueryBuilder('v')
-            ->andWhere('v.category IN (:val)')
-            ->setParameter('val', $value)
-            ->getQuery();
+    // public function findByChildIds(array $value, int $page)
+    // {
+    //     $dbquery = $this->createQueryBuilder('v')
+    //         ->andWhere('v.category IN (:val)')
+    //         ->setParameter('val', $value)
+    //         ->getQuery();
 
-        $pagination = $this->paginator->paginate($dbquery, $page, 5);
-        return $pagination;
-    }
+    //     $pagination = $this->paginator->paginate($dbquery, $page, 5);
+    //     return $pagination;
+    // }
 
     public function add(Video $entity, bool $flush = false): void
     {
