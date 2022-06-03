@@ -146,22 +146,27 @@ class FrontController extends AbstractController
     /**
      * @Route("/new-comment/{video}", methods={"POST"}, name="new_comment")
      */
-    public function newcomment(Video $video, Request $request, ManagerRegistry $doctrine)
+    public function newComment(Video $video, Request $request, ManagerRegistry $doctrine)
     {
         $em = $doctrine->getManager();
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
-        $this->denyAccessUnlessGranted('IS_AUTHEMTICATED_REMEMBERED');
         if (!empty(trim($request->request->get('comment')))) {
+
+            // $video = $this->getDoctrine()->getRepository(Video::class)->find($video_id);
+
             $comment = new Comment();
             $comment->setContent($request->request->get('comment'));
             $comment->setUser($this->getUser());
             $comment->setVideo($video);
+
+            $em = $doctrine->getManager();
             $em->persist($comment);
             $em->flush();
         }
+
         return $this->redirectToRoute('video_details', ['video' => $video->getId()]);
     }
-
     public function mainCategories(ManagerRegistry $doctrine)
     {
         $entityManager = $doctrine->getManager();
