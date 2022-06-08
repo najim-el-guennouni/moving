@@ -57,7 +57,6 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-
     private function VideoData()
     {
         return [
@@ -95,7 +94,16 @@ class AppFixtures extends Fixture
     {
         return [
 
-            // [12]
+            [12, 1],
+            [12, 2],
+            [12, 3],
+            [11, 1],
+            [11, 2],
+            [1, 1],
+            [1, 2],
+            [1, 3],
+            [2, 1],
+            [2, 2]
 
         ];
     }
@@ -104,7 +112,9 @@ class AppFixtures extends Fixture
     {
         return [
 
-            // [10]
+            [10, 1],
+            [10, 2],
+            [10, 3]
 
         ];
     }
