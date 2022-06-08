@@ -2,25 +2,24 @@
 
 namespace App\Entity;
 
-use App\Repository\VideoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index as index;
-
+use Doctrine\ORM\Mapping\Index as Index;
 
 /**
- * @ORM\Entity(repositoryClass=VideoRepository::class)
- * @ORM\Table(name="videos", indexes={@Index(name="title_idx",columns={"title"})})
+ * @ORM\Entity(repositoryClass="App\Repository\VideoRepository")
+ * @ORM\Table(name="videos", indexes={@Index(name="title_idx", columns={"title"})})
  */
 class Video
 {
     public const videoForNotLoggedIn = 113716040; // vimeo id
     public const VimeoPath = 'https://player.vimeo.com/video/';
-    public const perPage = 5;
+    public const perPage = 5; // for pagination
+
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -41,26 +40,24 @@ class Video
     private $duration;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="videos")
-     *@ORM\JoinColumn(name="category_id", referencedColumnName="id",
-     * onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="videos")
      */
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="video")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="video")
      */
     private $comments;
 
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="likeVideo")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="likedVideos")
      * @ORM\JoinTable(name="likes")
      */
     private $usersThatLike;
 
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="dislikevideos")
-     * @ORM\JoinTable(name="dislike")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="dislikedVideos")
+     * @ORM\JoinTable(name="dislikes")
      */
     private $usersThatDontLike;
 
@@ -93,20 +90,18 @@ class Video
         return $this->path;
     }
 
-    public function getVimeoId($user): ?string
-    {
-        if ($user) {
-            return $this->path;
-        } else {
-            return self::VimeoPath . self::videoForNoLoggedIn;
-        }
-    }
-
     public function setPath(string $path): self
     {
         $this->path = $path;
 
         return $this;
+    }
+
+    public function getVimeoId($user): ?string
+    {
+        if ($user) {
+            return $this->path;
+        } else return self::VimeoPath . self::videoForNotLoggedIn;
     }
 
     public function getDuration(): ?int
@@ -134,7 +129,7 @@ class Video
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @return Collection|Comment[]
      */
     public function getComments(): Collection
     {
@@ -153,7 +148,8 @@ class Video
 
     public function removeComment(Comment $comment): self
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
             if ($comment->getVideo() === $this) {
                 $comment->setVideo(null);
@@ -164,7 +160,7 @@ class Video
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection|User[]
      */
     public function getUsersThatLike(): Collection
     {
@@ -182,13 +178,15 @@ class Video
 
     public function removeUsersThatLike(User $usersThatLike): self
     {
-        $this->usersThatLike->removeElement($usersThatLike);
+        if ($this->usersThatLike->contains($usersThatLike)) {
+            $this->usersThatLike->removeElement($usersThatLike);
+        }
 
         return $this;
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection|User[]
      */
     public function getUsersThatDontLike(): Collection
     {
@@ -206,7 +204,9 @@ class Video
 
     public function removeUsersThatDontLike(User $usersThatDontLike): self
     {
-        $this->usersThatDontLike->removeElement($usersThatDontLike);
+        if ($this->usersThatDontLike->contains($usersThatDontLike)) {
+            $this->usersThatDontLike->removeElement($usersThatDontLike);
+        }
 
         return $this;
     }

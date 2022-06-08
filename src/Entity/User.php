@@ -62,24 +62,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $VimeoApiKey;
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video", mappedBy="usersThatLike")
+     * @ORM\JoinTable(name="likes")
+     */
+    private $likedVideos;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Video::class, mappedBy="usersThatLike")
-     * @ORM\JoinTable(name="like")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video", mappedBy="usersThatDontLike")
+     * @ORM\JoinTable(name="dislikes")
      */
-    private $likeVideos;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Video::class, mappedBy="usersThatDontLike")
-     * @ORM\JoinTable(name="dislike")
-     */
-    private $dislikevideos;
+    private $dislikedVideos;
 
     public function __construct()
     {
-        $this->likeVideos = new ArrayCollection();
-        $this->dislikevideos = new ArrayCollection();
+        $this->likedVideos = new ArrayCollection();
+        $this->dislikedVideos = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -207,54 +207,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Video>
+     * @return Collection|Video[]
      */
-    public function getlikeVideos(): Collection
+    public function getLikedVideos(): Collection
     {
-        return $this->likeVideos;
+        return $this->likedVideos;
     }
 
-    public function addlikeVideos(Video $likeVideos): self
+    public function addLikedVideo(Video $likedVideo): self
     {
-        if (!$this->likeVideos->contains($likeVideos)) {
-            $this->likeVideos[] = $likeVideos;
-            $likeVideos->addUsersThatLike($this);
+        if (!$this->likedVideos->contains($likedVideo)) {
+            $this->likedVideos[] = $likedVideo;
+            $likedVideo->addUsersThatLike($this);
         }
 
         return $this;
     }
 
-    public function removelikeVideos(Video $likeVideos): self
+    public function removeLikedVideo(Video $likedVideo): self
     {
-        if ($this->likeVideos->removeElement($likeVideos)) {
-            $likeVideos->removeUsersThatLike($this);
+        if ($this->likedVideos->contains($likedVideo)) {
+            $this->likedVideos->removeElement($likedVideo);
+            $likedVideo->removeUsersThatLike($this);
         }
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Video>
+     * @return Collection|Video[]
      */
-    public function getDislikevideos(): Collection
+    public function getDislikedVideos(): Collection
     {
-        return $this->dislikevideos;
+        return $this->dislikedVideos;
     }
 
-    public function addDislikevideo(Video $dislikevideo): self
+    public function addDislikedVideo(Video $dislikedVideo): self
     {
-        if (!$this->dislikevideos->contains($dislikevideo)) {
-            $this->dislikevideos[] = $dislikevideo;
-            $dislikevideo->addUsersThatDontLike($this);
+        if (!$this->dislikedVideos->contains($dislikedVideo)) {
+            $this->dislikedVideos[] = $dislikedVideo;
+            $dislikedVideo->addUsersThatDontLike($this);
         }
 
         return $this;
     }
 
-    public function removeDislikevideo(Video $dislikevideo): self
+    public function removeDislikedVideo(Video $dislikedVideo): self
     {
-        if ($this->dislikevideos->removeElement($dislikevideo)) {
-            $dislikevideo->removeUsersThatDontLike($this);
+        if ($this->dislikedVideos->contains($dislikedVideo)) {
+            $this->dislikedVideos->removeElement($dislikedVideo);
+            $dislikedVideo->removeUsersThatDontLike($this);
         }
 
         return $this;
