@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Index as Index;
 
 /**
@@ -129,7 +130,7 @@ class Video
     }
 
     /**
-     * @return Collection|Comment[]
+     * @return Collection<int, Comment>
      */
     public function getComments(): Collection
     {
@@ -148,8 +149,7 @@ class Video
 
     public function removeComment(Comment $comment): self
     {
-        if ($this->comments->contains($comment)) {
-            $this->comments->removeElement($comment);
+        if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
             if ($comment->getVideo() === $this) {
                 $comment->setVideo(null);
@@ -160,7 +160,7 @@ class Video
     }
 
     /**
-     * @return Collection|User[]
+     * @return Collection<int, User>
      */
     public function getUsersThatLike(): Collection
     {
@@ -178,15 +178,13 @@ class Video
 
     public function removeUsersThatLike(User $usersThatLike): self
     {
-        if ($this->usersThatLike->contains($usersThatLike)) {
-            $this->usersThatLike->removeElement($usersThatLike);
-        }
+        $this->usersThatLike->removeElement($usersThatLike);
 
         return $this;
     }
 
     /**
-     * @return Collection|User[]
+     * @return Collection<int, User>
      */
     public function getUsersThatDontLike(): Collection
     {
@@ -204,9 +202,7 @@ class Video
 
     public function removeUsersThatDontLike(User $usersThatDontLike): self
     {
-        if ($this->usersThatDontLike->contains($usersThatDontLike)) {
-            $this->usersThatDontLike->removeElement($usersThatDontLike);
-        }
+        $this->usersThatDontLike->removeElement($usersThatDontLike);
 
         return $this;
     }

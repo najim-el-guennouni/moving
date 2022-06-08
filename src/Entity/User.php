@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Video;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -80,7 +81,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->dislikedVideos = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -116,16 +116,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
+    public function getRoles(): ?array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->roles;
     }
 
     public function setRoles(array $roles): self
@@ -135,10 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -207,7 +197,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|Video[]
+     * @return Collection<int, Video>
      */
     public function getLikedVideos(): Collection
     {
@@ -226,8 +216,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeLikedVideo(Video $likedVideo): self
     {
-        if ($this->likedVideos->contains($likedVideo)) {
-            $this->likedVideos->removeElement($likedVideo);
+        if ($this->likedVideos->removeElement($likedVideo)) {
             $likedVideo->removeUsersThatLike($this);
         }
 
@@ -235,7 +224,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|Video[]
+     * @return Collection<int, Video>
      */
     public function getDislikedVideos(): Collection
     {
@@ -254,8 +243,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeDislikedVideo(Video $dislikedVideo): self
     {
-        if ($this->dislikedVideos->contains($dislikedVideo)) {
-            $this->dislikedVideos->removeElement($dislikedVideo);
+        if ($this->dislikedVideos->removeElement($dislikedVideo)) {
             $dislikedVideo->removeUsersThatDontLike($this);
         }
 

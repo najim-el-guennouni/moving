@@ -62,16 +62,9 @@ class Comment
         return $this->created_at;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedAt(): self
+    public function setCreatedAt(?\DateTimeInterface $created_at): self
     {
-        // $this->created_at = $created_at;
-        if (isset($this->created_at2))
-            $this->created_at = $this->created_at2;
-        else
-            $this->created_at = new \DateTime();
+        $this->created_at = $created_at;
 
         return $this;
     }
@@ -80,7 +73,6 @@ class Comment
         $this->created_at2 = $created_at;
         return $this;
     }
-
 
     public function getUser(): ?User
     {

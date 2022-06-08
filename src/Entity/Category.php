@@ -83,14 +83,14 @@ class Category
     }
 
     /**
-     * @return Collection<int, self>
+     * @return Collection<int, Category>
      */
     public function getSubcategorie(): Collection
     {
         return $this->subcategorie;
     }
 
-    public function addSubcategorie(self $subcategorie): self
+    public function addSubcategorie(Category $subcategorie): self
     {
         if (!$this->subcategorie->contains($subcategorie)) {
             $this->subcategorie[] = $subcategorie;
@@ -100,7 +100,7 @@ class Category
         return $this;
     }
 
-    public function removeSubcategorie(self $subcategorie): self
+    public function removeSubcategorie(Category $subcategorie): self
     {
         if ($this->subcategorie->removeElement($subcategorie)) {
             // set the owning side to null (unless already changed)
